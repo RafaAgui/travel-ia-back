@@ -1,0 +1,124 @@
+# Frida specifications folder
+.frida-specs/**
+
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+
+# ─── Virtual Environments ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.env/
+virtualenv/
+.virtualenv/
+pipenv/
+.pipenv/
+poetry.lock
+
+# ─── Package managers cache ───────────────────────────────────────────────────
+pip-log.txt
+pip-delete-this-directory.txt
+.pip/
+__pypackages__/
+
+# ─── Testing ──────────────────────────────────────────────────────────────────
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+nosetests.xml
+test-results/
+junit/
+
+# ─── Type Checking & Linting ──────────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ─── Jupyter Notebooks ────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── Generated Output Directories (runtime artifacts) ────────────────────────
+outputs/
+res/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+*.out
+
+# ─── IDE & Editors ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.launch
+.spyderproject
+.spyproject
+.ropeproject
+
+# ─── OS Generated ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ─── Docker ───────────────────────────────────────────────────────────────────
+.dockerignore
+docker-compose.override.yml
+
+# ─── Temporary Files ──────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
