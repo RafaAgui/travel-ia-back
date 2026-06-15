@@ -26,16 +26,14 @@ if not API_KEY:
     warnings.warn("GOOGLE_API_KEY no está cargada. Asegúrate de ponerla en .env")
 
 OUTPUT_DIR = Path("outputs")
-RES_DIR = Path("res")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("travel_api")
 
 app = FastAPI(title="Travel Post Generator API")
 
-# Asegurarse de que los directorios de salida existen
+# Asegurarse de que el directorio de salida existe
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-RES_DIR.mkdir(parents=True, exist_ok=True)
 
 # Registrar CORS (usar "*" o lista concreta)
 app.add_middleware(
@@ -54,6 +52,16 @@ class TravelRequest(BaseModel):
 
 class TravelResponse(BaseModel):
     id: str
+    post: str
+
+class TravelInput(BaseModel):
+    lugar: str
+    transporte: str
+    dias: str
+
+class TravelListItem(BaseModel):
+    id: str
+    input: TravelInput
     post: str
 
 # ---- Prompt y LLM (global para reutilizar) ----
@@ -155,23 +163,35 @@ async def plan_viaje(payload: TravelRequest):
         logger.exception("No se pudo guardar el JSON de salida")
         # no impedimos devolver la respuesta; sólo avisamos con log
 
-    res_path = RES_DIR / f"{item_id}.md"
-    try:
-        res_content = (
-            f"# Plan de viaje {item_id}\n\n"
-            f"**Lugar:** {payload.lugar}\n\n"
-            f"**Transporte:** {payload.transporte}\n\n"
-            f"**Días:** {payload.dias}\n\n"
-            f"---\n\n"
-            f"{post_viaje}\n"
-        )
-        res_path.write_text(res_content, encoding="utf-8")
-    except Exception as e:
-        logger.exception("No se pudo guardar el markdown de salida")
-
     logger.info("Generado post id=%s", item_id)
 
     return JSONResponse(content={"id": item_id, "post": post_viaje})
+
+# ---- Endpoint GET: listar todos los planes guardados en outputs ----
+@app.get("/outputs", response_model=list[TravelListItem])
+async def list_outputs():
+    """
+    Devuelve la lista completa de planes guardados en la carpeta outputs/.
+    Útil para que una aplicación Angular muestre el historial de viajes generados.
+    """
+    results: list[dict] = []
+    json_files = sorted(OUTPUT_DIR.glob("*.json"))
+
+    if not json_files:
+        return JSONResponse(content=[])
+
+    for file_path in json_files:
+        try:
+            content = json.loads(file_path.read_text(encoding="utf-8"))
+            results.append({
+                "id": content.get("id", file_path.stem),
+                "input": content.get("input", {}),
+                "post": content.get("post", ""),
+            })
+        except Exception:
+            logger.warning("No se pudo leer el archivo %s, se omite.", file_path.name)
+
+    return JSONResponse(content=results)
 
 # ---- Endpoint GET: obtener plan por id (para que otra app lo lea) ----
 @app.get("/plan-viaje/{item_id}", response_model=TravelResponse)
